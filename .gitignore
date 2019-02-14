@@ -1,0 +1,19 @@
+# Ignore Gradle project-specific cache directory.
+/.gradle
+
+# Ignore Gradle build output directory.
+/build
+
+# ignore Visual Studio Code output directory.
+/bin
+
+# ignore Visual Studio settings.
+/.vscode
+
+# ignore local settings.
+/gradle.properties
+
+# ignore auto-generated files.
+/.settings
+/.classpath
+/.project
