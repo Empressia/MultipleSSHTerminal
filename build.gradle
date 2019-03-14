@@ -1,0 +1,85 @@
+plugins {
+	id "java";
+	id "java-library";
+	id "org.openjfx.javafxplugin" version "0.0.8";
+}
+
+repositories {
+	jcenter();
+}
+
+dependencies {
+
+	// This dependency is found on compile classpath of this component and consumers.
+	implementation "org.openjfx:javafx-controls:11.0.2";
+	implementation "org.openjfx:javafx-fxml:11.0.2";
+
+	// Use JUnit Jupiter API for testing.
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.2";
+	// Use JUnit Jupiter Engine for testing.
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.4.2";
+}
+
+javafx {
+	modules = [ "javafx.controls", "javafx.fxml", "javafx.web" ];
+}
+
+// Define the main class for the application
+ext.moduleName = "jp.empressia.app.multiple_ssh_terminal";
+ext.mainClassName = "jp.empressia.app.multiple_ssh_terminal.Application";
+
+tasks.withType(JavaCompile) {
+	options.encoding "UTF-8";
+	options.compilerArgs << "-parameters";
+}
+
+test {
+	// Use junit platform for unit tests
+	useJUnitPlatform();
+}
+
+jar {
+	baseName moduleName;
+	from sourceSets.main.output;
+	manifest {
+		attributes (
+			"Main-Class": mainClassName,
+			"Automatic-Module-Name": moduleName,
+		);
+	}
+}
+
+task distZip(type: Zip) {
+	archiveName = "${project.name}.zip";
+	metadataCharset = "UTF-8";
+	from jar.archivePath;
+	into("lib") {
+		from configurations.compileClasspath;
+	}
+}
+distZip.dependsOn(jar);
+build.dependsOn(distZip);
+
+task outputJavaFXDependencies(type: Copy) {
+	from configurations.compileClasspath.filter {
+		it.name.startsWith("javafx-");
+	}
+	into "build/javafx"
+}
+
+if(
+	project.hasProperty("repository_url") &&
+	project.hasProperty("pom_version")
+) {
+	apply plugin: "maven";
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository url: repository_url;
+				pom.version = pom_version;
+				pom.groupId = "jp.empressia"
+				pom.artifactId = moduleName
+			}
+		}
+	}
+}
