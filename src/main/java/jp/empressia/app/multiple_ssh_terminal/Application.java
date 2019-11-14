@@ -33,6 +33,13 @@ public class Application extends javafx.application.Application {
 		Parent layout = loader.<Parent>load();
 		Scene scene = new Scene(layout);
 		stage.setScene(scene);
+		stage.setOnHidden((e) -> {
+			var c = loader.getController();
+			if(c instanceof AutoCloseable) {
+				AutoCloseable closeable = (AutoCloseable)c;
+				try { closeable.close(); } catch(Exception ex) {}
+			}
+		});
 		stage.show();
 	}
 

@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
 <BorderPane minHeight="0.0" minWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jp.empressia.app.multiple_ssh_terminal.ui.MainController">
+	<center>
+		<SplitPane dividerPositions="0.5" orientation="VERTICAL" BorderPane.alignment="CENTER">
+			<items>
+				<TabPane fx:id="PluginTabPane" minHeight="200.0" tabClosingPolicy="UNAVAILABLE" />
+				<BorderPane>
+					<center>
+						<TabPane fx:id="ConsoleTabPane" minHeight="200.0" tabClosingPolicy="UNAVAILABLE" />
+					</center>
+					<bottom>
+						<BorderPane BorderPane.alignment="CENTER">
+							<right>
+								<HBox BorderPane.alignment="CENTER">
+									<children>
+										<ToggleButton fx:id="CRToggleButton" mnemonicParsing="false" selected="true" text="CR" />
+										<ToggleButton fx:id="LFToggleButton" mnemonicParsing="false" selected="false" text="LF" />
+										<Button mnemonicParsing="false" onAction="#Action_SendButton" text="送る" />
+									</children>
+								</HBox>
+							</right>
+							<center>
+								<TextField fx:id="InputTextField" onAction="#Action_InputTextField" BorderPane.alignment="CENTER" />
+							</center>
+							<left>
+								<ToggleButton fx:id="SendToAllToggleButton" mnemonicParsing="false" text="すべてへ" BorderPane.alignment="CENTER" />
+							</left>
+						</BorderPane>
+					</bottom>
+				</BorderPane>
+			</items>
+		</SplitPane>
+	</center>
+	<bottom>
+		<Label fx:id="StatusLine" minHeight="-Infinity" BorderPane.alignment="CENTER">
+			<padding>
+				<Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+			</padding>
+		</Label>
+	</bottom>
+	<top>
+		<MenuBar BorderPane.alignment="CENTER">
+		  <menus>
+			 <Menu mnemonicParsing="false" text="プロファイル">
+				<items>
+				  <MenuItem mnemonicParsing="false" onAction="#Action_OpenProfileButton" text="開く" />
+				</items>
+			 </Menu>
+		  </menus>
+		</MenuBar>
+	</top>
 </BorderPane>

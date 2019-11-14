@@ -17,3 +17,6 @@
 /.settings
 /.classpath
 /.project
+
+# ignore sensitive settings files.
+*.profile
