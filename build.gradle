@@ -2,14 +2,15 @@ plugins {
 	id "java";
 	id "java-library";
 	id "org.openjfx.javafxplugin" version "0.0.8";
+	id "signing";
+	id "maven-publish";
 }
 
 repositories {
-	jcenter();
+	mavenCentral();
 }
 
 dependencies {
-
 	// This dependency is found on compile classpath of this component and consumers.
 	implementation "org.openjfx:javafx-controls:11.0.2";
 	implementation "org.openjfx:javafx-fxml:11.0.2";
@@ -31,10 +32,17 @@ javafx {
 // Define the main class for the application
 ext.moduleName = "jp.empressia.app.multiple_ssh_terminal";
 ext.mainClassName = "jp.empressia.app.multiple_ssh_terminal.Application";
+// ext.local_network_repository_url;
+// ext.version;
 
 tasks.withType(JavaCompile) {
 	options.encoding "UTF-8";
 	options.compilerArgs << "-parameters";
+}
+
+java {
+	withJavadocJar();
+	withSourcesJar();
 }
 
 test {
@@ -71,19 +79,67 @@ task outputJavaFXDependencies(type: Copy) {
 	into "build/javafx"
 }
 
-if(
-	project.hasProperty("repository_url") &&
-	project.hasProperty("pom_version")
-) {
-	apply plugin: "maven";
-	uploadArchives {
-		repositories {
-			mavenDeployer {
-				repository url: repository_url;
-				pom.version = pom_version;
-				pom.groupId = "jp.empressia"
-				pom.artifactId = moduleName
+javadoc {
+	options.charSet "UTF-8";
+	options.encoding "UTF-8";
+	options.addBooleanOption("html5", true);
+	options.addStringOption("Xdoclint:none", "-quiet");
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId = "jp.empressia";
+			artifactId = moduleName;
+			from components.java;
+			// for Maven Central.
+			pom {
+				name = "Empressia Terminal with multiple SSH";
+				description = "SSH Terminal for multiple connections.";
+				url = "https://github.com/Empressia/MultipleSSHTerminal";
+				licenses {
+					license {
+						name = "zlib License";
+						comments = "If you want to use this with a team (multiple people), select the MIT license.";
+					}
+					license {
+						name = "MIT License";
+						comments = "If you want to use this with a team (multiple people), select the MIT license.";
+					}
+				}
+				developers {
+					developer {
+						// The unique ID of this developer in the SCM.
+						id = "Empressia";
+					}
+				}
+				scm {
+					connection = "scm:git:https://github.com/Empressia/MultipleSSHTerminal.git"
+					url = "https://github.com/Empressia/MultipleSSHTerminal.git"
+				}
 			}
 		}
 	}
+	repositories {
+		// publishMavenPublicationToLocalNetworkRepository
+		maven {
+			name = "LocalNetwork";
+			url = local_network_repository_url;
+		}
+		// publishMavenPublicationToMavenCentralRepository
+		maven {
+			name = "MavenCentral";
+			def releasesRepoUrl = sonatype_release_repository_url;
+			def snapshotsRepoUrl = sonatype_snapshot_repository_url;
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl;
+			credentials {
+				username = sonatype_username;
+				password = sonatype_password;
+			}
+		}
+	}
+}
+
+signing {
+	sign publishing.publications.maven;
 }
